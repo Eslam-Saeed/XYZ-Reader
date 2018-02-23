@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +22,7 @@ import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.xyzreader.R;
@@ -45,7 +48,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = ArticleListActivity.class.toString();
-    private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
 
@@ -53,7 +55,7 @@ public class ArticleListActivity extends AppCompatActivity implements
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +66,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         );
-
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-
-
-        final View toolbarContainerView = findViewById(R.id.toolbar_container);
-
+        
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -79,6 +76,40 @@ public class ArticleListActivity extends AppCompatActivity implements
             refresh();
         }
     }
+
+ /*   private void initializeCollapsingToolbar() {
+        final ImageView imgToolbar = collapsingToolbar.findViewById(R.id.imgAppName);
+        collapsingToolbar.setTitle(getString(R.string.app_name));
+        collapsingToolbar.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+        *//*collapsingToolbar.setExpandedTitleGravity(Gravity.TOP | Gravity.START);
+        collapsingToolbar.setCollapsedTitleGravity(Gravity.START);*//*
+        AppBarLayout appBarLayout = findViewById(R.id.appBar);
+
+        // hiding & showing the title when toolbar expanded & collapsed
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = false;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                float offsetAlpha = (appBarLayout.getY() / appBarLayout.getTotalScrollRange());
+                imgToolbar.setAlpha(1 - (offsetAlpha * -1));
+                if (scrollRange == -1)
+                    scrollRange = appBarLayout.getTotalScrollRange();
+
+                if (scrollRange + verticalOffset == 0) {
+                    //collapsingToolbar.setTitle(getString(R.string.app_name));
+
+
+                } else if (isShow) {
+                    //collapsingToolbar.setTitle(" ");
+                    isShow = false;
+
+                }
+            }
+        });
+    }
+*/
 
     private void refresh() {
         startService(new Intent(this, UpdaterService.class));
@@ -189,8 +220,8 @@ public class ArticleListActivity extends AppCompatActivity implements
             } else {
                 holder.subtitleView.setText(Html.fromHtml(
                         outputFormat.format(publishedDate)
-                        + "<br/>" + " by "
-                        + mCursor.getString(ArticleLoader.Query.AUTHOR)));
+                                + "<br/>" + " by "
+                                + mCursor.getString(ArticleLoader.Query.AUTHOR)));
             }
             holder.thumbnailView.setImageUrl(
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
@@ -216,6 +247,7 @@ public class ArticleListActivity extends AppCompatActivity implements
             subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
         }
     }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
