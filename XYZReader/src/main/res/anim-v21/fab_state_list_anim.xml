@@ -22,8 +22,8 @@
             <objectAnimator
                 android:duration="@android:integer/config_shortAnimTime"
                 android:propertyName="translationZ"
-                android:valueTo="@dimen/fab_press_translation_z"
-                android:valueType="floatType" />
+                android:valueTo="@dimen/fab_elevation_pressed"
+                android:valueType="floatType"/>
         </set>
     </item>
     <item>
@@ -31,8 +31,8 @@
             <objectAnimator
                 android:duration="@android:integer/config_shortAnimTime"
                 android:propertyName="translationZ"
-                android:valueTo="0"
-                android:valueType="floatType" />
+                android:valueTo="@dimen/fab_elevation_resting"
+                android:valueType="floatType"/>
         </set>
     </item>
 </selector>
