@@ -19,6 +19,7 @@ import java.util.GregorianCalendar;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
@@ -268,6 +269,10 @@ public class ArticleDetailFragment extends Fragment implements
                 mProgressDialog.show();
             }
         }
+    }
+
+    private void showSnackBar() {
+        Snackbar.make(getView(), R.string.data_loaded_success, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

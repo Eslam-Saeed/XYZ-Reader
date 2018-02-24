@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +30,7 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
+import com.example.xyzreader.remote.ConnectionDetector;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,13 +62,14 @@ public class ArticleListActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_article_list);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setDefaultFontPath("fonts/Rosario-Regular.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         );
-        
+
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -75,41 +78,9 @@ public class ArticleListActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             refresh();
         }
+        if (!ConnectionDetector.isConnectingToInternet(this))
+            showSnackBar();
     }
-
- /*   private void initializeCollapsingToolbar() {
-        final ImageView imgToolbar = collapsingToolbar.findViewById(R.id.imgAppName);
-        collapsingToolbar.setTitle(getString(R.string.app_name));
-        collapsingToolbar.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
-        *//*collapsingToolbar.setExpandedTitleGravity(Gravity.TOP | Gravity.START);
-        collapsingToolbar.setCollapsedTitleGravity(Gravity.START);*//*
-        AppBarLayout appBarLayout = findViewById(R.id.appBar);
-
-        // hiding & showing the title when toolbar expanded & collapsed
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            boolean isShow = false;
-            int scrollRange = -1;
-
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                float offsetAlpha = (appBarLayout.getY() / appBarLayout.getTotalScrollRange());
-                imgToolbar.setAlpha(1 - (offsetAlpha * -1));
-                if (scrollRange == -1)
-                    scrollRange = appBarLayout.getTotalScrollRange();
-
-                if (scrollRange + verticalOffset == 0) {
-                    //collapsingToolbar.setTitle(getString(R.string.app_name));
-
-
-                } else if (isShow) {
-                    //collapsingToolbar.setTitle(" ");
-                    isShow = false;
-
-                }
-            }
-        });
-    }
-*/
 
     private void refresh() {
         startService(new Intent(this, UpdaterService.class));
@@ -158,6 +129,10 @@ public class ArticleListActivity extends AppCompatActivity implements
         StaggeredGridLayoutManager sglm =
                 new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(sglm);
+    }
+
+    private void showSnackBar() {
+        Snackbar.make(mRecyclerView, R.string.no_internet_connection, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
